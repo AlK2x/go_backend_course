@@ -1,14 +1,7 @@
 # Go Backend course
 
-## Lab 1
+## List of projects and labs
 
+1. [HrmProject](hrm)
 1. [urlresolver](urlresolver)
 
-Build project:
-```
-make build
-```
-Run:
-```
-bin/urlresolver -f <config_file>
-```

@@ -1,0 +1,25 @@
+title This is a title
+
+participant Api Gateway
+participant Candiate
+participant Employee
+participant Message Bus
+
+Api Gateway->Candiate:Hire candidate
+activate Candiate
+Candiate->Candiate:HireCandidate()
+Candiate->Message Bus:CandiateHiredEvent
+deactivate Candiate
+activate Message Bus
+Message Bus->Employee:Comsume
+deactivate Message Bus
+activate Employee
+Employee->Employee:CreateNewEmployee()
+Employee->Message Bus:EmployeeCreatedEvent
+deactivate Employee
+activate Message Bus
+Message Bus->Candiate:consume
+deactivate Message Bus
+activate Candiate
+Candiate->Api Gateway:CandidateHired()
+deactivate Candiate
