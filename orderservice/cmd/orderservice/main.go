@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"go_backend_course/orderservice/pkg/api"
 	"log"
 	"net/http"
+	"orderservice/pkg/orderservice"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	router := api.NewRouter()
+	router := orderservice.NewRouter()
 	server := &http.Server{
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
