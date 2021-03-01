@@ -2,16 +2,20 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"orderservice/pkg/orderservice"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+
 	router := orderservice.NewRouter()
 	server := &http.Server{
 		Handler:      router,

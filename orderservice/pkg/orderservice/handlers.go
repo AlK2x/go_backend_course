@@ -22,6 +22,11 @@ type OrderResponse struct {
 	Cost               int    `json:"cost"`
 }
 
+type OrderListResponse struct {
+	Id        string      `json:"id"`
+	MenuItems []OrderItem `json:"menuItems"`
+}
+
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	s := router.PathPrefix("/api/v2").Subrouter()
@@ -36,16 +41,11 @@ func NewRouter() *mux.Router {
 		Path("/orders").
 		Handler(Logger(createHandlerFunc(GetOrderList)))
 
-	s.Name("GetOrderList").
-		Methods(http.MethodGet).
-		Path("/").
-		Handler(Logger(createHandlerFunc(GetOrderList)))
-
 	return router
 }
 
 func GetOrderById(w http.ResponseWriter, r *http.Request) error {
-	orderId := mux.Vars(r)["orderID"]
+	orderId := mux.Vars(r)["orderId"]
 	err := jsonResponse(w, OrderResponse{
 		Order: Order{
 			MenuItems: []OrderItem{{
@@ -63,7 +63,17 @@ func GetOrderById(w http.ResponseWriter, r *http.Request) error {
 }
 
 func GetOrderList(w http.ResponseWriter, _ *http.Request) error {
-	w.WriteHeader(http.StatusOK)
+	list := OrderListResponse{
+		Id: "d290f1ee-6c56-4b01-90e6-d701748f0851",
+		MenuItems: []OrderItem{{
+			Id:       "f290d1ce-6c234-4b31-90e6-d701748f0851",
+			Quantity: 1,
+		}},
+	}
+	err := jsonResponse(w, list)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

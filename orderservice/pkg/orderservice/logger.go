@@ -1,7 +1,7 @@
 package orderservice
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 )
@@ -12,12 +12,12 @@ func Logger(inner http.Handler) http.Handler {
 
 		inner.ServeHTTP(w, r)
 
-		log.Printf(
-			"%s %s %s %s",
-			r.Method,
-			r.RequestURI,
-			start,
-			time.Since(start),
-		)
+		log.WithFields(log.Fields{
+			"method":      r.Method,
+			"url":         r.URL,
+			"remoteAddr":  r.RemoteAddr,
+			"userAgent":   r.UserAgent(),
+			"requestTime": time.Since(start),
+		}).Info("got a new request")
 	})
 }
