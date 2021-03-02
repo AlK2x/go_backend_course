@@ -31,21 +31,26 @@ func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	s := router.PathPrefix("/api/v2").Subrouter()
 
-	s.Name("GetOrderById").
+	s.Name("getOrderById").
 		Methods(http.MethodGet).
 		Path("/order/{orderId}").
-		Handler(Logger(createHandlerFunc(GetOrderById)))
+		Handler(logger(createHandlerFunc(getOrderById)))
 
-	s.Name("GetOrderList").
+	s.Name("getOrderList").
 		Methods(http.MethodGet).
 		Path("/orders").
-		Handler(Logger(createHandlerFunc(GetOrderList)))
+		Handler(logger(createHandlerFunc(getOrderList)))
 
 	return router
 }
 
-func GetOrderById(w http.ResponseWriter, r *http.Request) error {
-	orderId := mux.Vars(r)["orderId"]
+func getOrderById(w http.ResponseWriter, r *http.Request) error {
+	orderId, ok := mux.Vars(r)["orderId"]
+	if !ok {
+		badRequestResponse(w, "OrderId not found")
+		return nil
+	}
+
 	err := jsonResponse(w, OrderResponse{
 		Order: Order{
 			MenuItems: []OrderItem{{
@@ -62,7 +67,7 @@ func GetOrderById(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func GetOrderList(w http.ResponseWriter, _ *http.Request) error {
+func getOrderList(w http.ResponseWriter, _ *http.Request) error {
 	list := OrderListResponse{
 		Id: "d290f1ee-6c56-4b01-90e6-d701748f0851",
 		MenuItems: []OrderItem{{
@@ -85,6 +90,10 @@ func jsonResponse(w http.ResponseWriter, r interface{}) error {
 	}
 	_, err = w.Write(resp)
 	return err
+}
+
+func badRequestResponse(w http.ResponseWriter, err string) {
+	http.Error(w, err, http.StatusBadRequest)
 }
 
 func errorResponse(w http.ResponseWriter, err string) {
