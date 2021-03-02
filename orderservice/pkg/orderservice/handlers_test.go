@@ -30,7 +30,7 @@ func TestGetOrderById(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	order := Order{}
+	order := order{}
 	if err = json.Unmarshal(jsonStr, &order); err != nil {
 		t.Errorf("Can't parse json with error %v", err)
 	}
@@ -53,7 +53,7 @@ func TestGetOrderList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	list := OrderListResponse{}
+	list := orderListResponse{}
 	if err = json.Unmarshal(jsonString, &list); err != nil {
 		t.Errorf("Can't parse json response with error %v", err)
 	}

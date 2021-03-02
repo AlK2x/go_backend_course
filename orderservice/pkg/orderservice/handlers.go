@@ -7,24 +7,24 @@ import (
 	"time"
 )
 
-type Order struct {
-	MenuItems []OrderItem `json:"menuItems"`
+type order struct {
+	MenuItems []orderItem `json:"menuItems"`
 }
 
-type OrderItem struct {
+type orderItem struct {
 	Id       string `json:"id"`
 	Quantity int    `json:"quantity"`
 }
 
-type OrderResponse struct {
-	Order
+type orderResponse struct {
+	order
 	OrderedAtTimestamp string `json:"orderedAtTimestamp"`
 	Cost               int    `json:"cost"`
 }
 
-type OrderListResponse struct {
+type orderListResponse struct {
 	Id        string      `json:"id"`
-	MenuItems []OrderItem `json:"menuItems"`
+	MenuItems []orderItem `json:"menuItems"`
 }
 
 func NewRouter() *mux.Router {
@@ -51,9 +51,9 @@ func getOrderById(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	err := jsonResponse(w, OrderResponse{
-		Order: Order{
-			MenuItems: []OrderItem{{
+	err := jsonResponse(w, orderResponse{
+		order: order{
+			MenuItems: []orderItem{{
 				Id:       orderId,
 				Quantity: 1,
 			}},
@@ -68,9 +68,9 @@ func getOrderById(w http.ResponseWriter, r *http.Request) error {
 }
 
 func getOrderList(w http.ResponseWriter, _ *http.Request) error {
-	list := OrderListResponse{
+	list := orderListResponse{
 		Id: "d290f1ee-6c56-4b01-90e6-d701748f0851",
-		MenuItems: []OrderItem{{
+		MenuItems: []orderItem{{
 			Id:       "f290d1ce-6c234-4b31-90e6-d701748f0851",
 			Quantity: 1,
 		}},
