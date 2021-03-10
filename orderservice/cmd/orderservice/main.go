@@ -2,21 +2,36 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
-	"orderservice/pkg/orderservice"
+	"orderservice/pkg/orderservice/infrastructure"
+	"orderservice/pkg/orderservice/transport"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	log "github.com/sirupsen/logrus"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 
-	router := orderservice.NewRouter()
+	db, err := sql.Open("mysql", "user:12345@/orderservice")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
+	handler := transport.NewServer(infrastructure.CreateRepository(db))
+	router := transport.NewRouter(handler)
 	server := &http.Server{
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
