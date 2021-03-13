@@ -11,16 +11,37 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const appId = "orderservice"
+
+type config struct {
+	ServeRestAddress string `envconfig:"serve_rest_address" default:":8000"`
+	DbDns            string `envconfig:"db_dns"`
+}
+
+func parseEnv() (*config, error) {
+	c := new(config)
+	if err := envconfig.Process(appId, c); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 
-	db, err := sql.Open("mysql", "user:12345@/orderservice")
+	conf, err := parseEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db, err := sql.Open("mysql", conf.DbDns)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +57,7 @@ func main() {
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Addr:         ":8000",
+		Addr:         conf.ServeRestAddress,
 	}
 
 	go func() {

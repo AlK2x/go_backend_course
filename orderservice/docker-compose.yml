@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  orderservice:
+    container_name: orderservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - 8000:8000
+    environment:
+      ORDERSERVICE_SERVER_REST_ADDRESS: ":8000"
+      ORDERSERVICE_DB_DNS: "user:12345@tcp(orderservice-db:3306)/orderservice"
+    depends_on:
+      - orderservice-db
+  orderservice-db:
+    image: "percona/percona-server:8.0"
+    container_name: orderservice-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "orderservice"
+      MYSQL_USER: "orderservice"
+      MYSQL_PASSWORD: "example"
+    volumes:
+      - ./data/orderservice:/var/lib/mysql"
