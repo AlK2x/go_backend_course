@@ -2,16 +2,15 @@ version: "3.9"
 services:
   orderservice:
     container_name: orderservice
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: "aleksandrkrylov/orderservice:latest"
     ports:
     - 8000:8000
     environment:
       ORDERSERVICE_SERVER_REST_ADDRESS: ":8000"
       ORDERSERVICE_DB_DNS: "user:12345@tcp(orderservice-db:3306)/orderservice"
     depends_on:
-      - orderservice-db
+      orderservice-db:
+        condition: service_healthy
   orderservice-db:
     image: "percona/percona-server:8.0"
     container_name: orderservice-db
@@ -20,5 +19,9 @@ services:
       MYSQL_DATABASE: "orderservice"
       MYSQL_USER: "orderservice"
       MYSQL_PASSWORD: "example"
+    healthcheck:
+      test: mysql -h127.0.0.1 -uroot -e 'SELECT 1'
+      interval: 20s
+      timeout: 1s
     volumes:
-      - ./data/orderservice:/var/lib/mysql"
+      - ./data/orderservice:/var/lib/mysql
